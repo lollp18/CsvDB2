@@ -16,9 +16,9 @@ class Controller extends Model {
 
     this.PathUsers = "/users"
 
-    this.PathDeleteAndUpdateUsers = this.PathUsers + "/:id"
-
+    this.PathDeleteAndUpdateUsers = "/users/:id"
     this.PathUserTables = "/user/:id/tables"
+    this.PathUserTablesDelete = "/user/:id/tables/:tableID" //
   }
 
   InitRouten() {
@@ -28,6 +28,7 @@ class Controller extends Model {
     this.SetDeleteUsers()
     this.SetUpdateUser()
     this.SetGetUserTables()
+    this.SetDeletTable()
   }
 
   InitUse() {
@@ -91,7 +92,7 @@ class Controller extends Model {
           Password: Password,
           Salt,
         },
-        Tabellen: [],
+        CurrentTables: [],
       })
 
       return res.status(201).json(User).end()
@@ -192,23 +193,24 @@ class Controller extends Model {
 
   SetUpdateUser() {
     this.Router.patch(
-      this.PathDeleteAndUpdateUsers,
+      this.PathUserTables,
       this.IsAuthenticated.bind(this),
       this.IsOwner.bind(this),
-      this.UpdateUser.bind(this)
+      this.UpdateUserTables.bind(this)
     )
   }
 
-  async UpdateUser(req, res, next) {
+  async UpdateUserTables(req, res) {
     try {
-      const { Username } = req.body
+      const { CurrentTables } = req.body
+      console.log(CurrentTables)
       const { id } = req.params
-      if (!Username) {
+      if (!CurrentTables) {
         return res.sendStatus(400)
       }
+
       const User = await this.GetUserById(id)
-      console.log(User)
-      User.Username = Username
+      User.CurrentTables = CurrentTables
 
       await User.save()
 
@@ -220,7 +222,7 @@ class Controller extends Model {
   }
 
   SetGetUserTables() {
-    this.Router.patch(
+    this.Router.get(
       this.PathUserTables,
       this.IsAuthenticated.bind(this),
       this.IsOwner.bind(this),
@@ -228,7 +230,7 @@ class Controller extends Model {
     )
   }
 
-  async GetUserTables(id) {
+  async GetUserTables(req, res) {
     try {
       const { id } = req.params
       if (!id) {
@@ -236,9 +238,36 @@ class Controller extends Model {
       }
       const User = await this.GetUserById(id)
 
-      const UserTables = User.Tabellen
+      const UserTables = User.CurrentTables
 
       return res.status(200).json(UserTables).end()
+    } catch (e) {
+      console.log(e)
+      return res.sendStatus(400)
+    }
+  }
+  SetDeletTable() {
+    this.Router.delete(
+      this.PathUserTablesDelete,
+      this.IsAuthenticated.bind(this),
+      this.IsOwner.bind(this),
+      this.DeletTable.bind(this)
+    )
+  }
+  async DeletTable(req, res) {
+    try {
+      const { id, tableID } = req.params
+      if (!id) {
+        return res.sendStatus(400)
+      }
+      if (!tableID) {
+        return res.sendStatus(400)
+      }
+      const User = await this.GetUserById(id)
+      User.CurrentTables.splice(tableID, 1)
+      await User.save()
+
+      return res.status(200).end()
     } catch (e) {
       console.log(e)
       return res.sendStatus(400)

@@ -26,7 +26,7 @@ class Model {
         Salt: String,
         SessionToken: String,
       },
-      Table: [],
+      CurrentTables: [],
     }
 
     this.UserSchema = new mongoose.Schema(this.Schema)
@@ -119,7 +119,7 @@ class Model {
   async IsOwner(req, res, next) {
     try {
       const { id } = req.params
-      console.log(id)
+
       const CurrentUserId = get(req, "Identity._id")
 
       if (!CurrentUserId) {

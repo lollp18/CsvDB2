@@ -2,7 +2,8 @@
   "type": "module",
   "main": "App.js",
   "scripts": {
-    "start": "nodemon",
+    "start": "node",
+    "dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -15,6 +16,6 @@
     "mongoose": "^7.6.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.3"
   }
 }

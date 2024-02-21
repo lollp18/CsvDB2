@@ -15,7 +15,6 @@ class Controller extends Model {
     this.PathLogin = "/auth/login"
 
     this.PathUsers = "/users"
-
     this.PathDeleteAndUpdateUsers = "/users/:id"
     this.PathUserTables = "/user/:id/tables"
     this.PathUserTablesDelete = "/user/:id/tables/:tableID" //

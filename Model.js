@@ -33,7 +33,7 @@ class Model {
 
     this.UserModel = mongoose.model("User", this.UserSchema)
     this.CorsOptions = {
-      origin: "http://localhost:5173",
+      origin: ["http://localhost:5173", "https://csv2.netlify.app/#/"],
       credentials: true,
       optionSuccessStatus: 200,
       exposedHeaders: ["set-cookie"],

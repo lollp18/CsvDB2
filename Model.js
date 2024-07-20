@@ -15,7 +15,7 @@ class Model {
       "mongodb+srv://lorenzo123696:lollp123@cluster0.8wsnvma.mongodb.net/?retryWrites=true&w=majority"
 
     this.Router = express.Router()
-
+ 
     this.SECRET = "CSVDB-REST-API"
 
     this.Schema = {
@@ -33,7 +33,11 @@ class Model {
 
     this.UserModel = mongoose.model("User", this.UserSchema)
     this.CorsOptions = {
-      origin: ["http://localhost:5173", "https://csv2.netlify.app"],
+      origin: [
+        "http://localhost:5173",
+        "https://csv2.netlify.app",
+        "http://localhost:3000",
+      ],
       credentials: true,
       optionSuccessStatus: 200,
       exposedHeaders: ["set-cookie"],

@@ -103,8 +103,9 @@ class Controller extends Model {
 
   async Login(req, res) {
     try {
+      
       const { Email, Passwort } = req.body
-
+      console.log(req)
       if (!Email || !Passwort) {
         return res.status(202).send("Alle Felder ausfüllen")
       }

@@ -103,7 +103,6 @@ class Controller extends Model {
 
   async Login(req, res) {
     try {
-      
       const { Email, Passwort } = req.body
       console.log(req)
       if (!Email || !Passwort) {

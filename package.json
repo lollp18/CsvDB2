@@ -1,6 +1,6 @@
 {
   "type": "module",
-  "main": "App.js",
+  "main": "./api/index.js",
   "scripts": {
     "start": "node App.js",
     "dev": "nodemon",

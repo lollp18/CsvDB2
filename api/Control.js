@@ -10,14 +10,14 @@ class Controller extends Model {
   constructor() {
     super()
 
-    this.PathRegistrieren = "api/auth/registrieren"
+    this.PathRegistrieren = "/auth/registrieren"
 
-    this.PathLogin = "api/auth/login"
+    this.PathLogin = "/auth/login"
 
-    this.PathUsers = "api/users"
-    this.PathDeleteAndUpdateUsers = "api/users/:id"
-    this.PathUserTables = "api/user/:id/tables"
-    this.PathUserTablesDelete = "api/user/:id/tables/:tableID" //
+    this.PathUsers = "/users"
+    this.PathDeleteAndUpdateUsers = "/users/:id"
+    this.PathUserTables = "/user/:id/tables"
+    this.PathUserTablesDelete = "/user/:id/tables/:tableID" //
   }
 
   InitRouten() {
@@ -41,7 +41,7 @@ class Controller extends Model {
 
   ListenServer() {
     this.CsvDB.listen(8080, () => {
-      this.App.get("/api", (req, res) => {
+      this.App.get("/", (req, res) => {
         res.send(
           "<h1>CsvDB</h1><a href='http://localhost:8080/auth/registriren' >registriren<a>"
         )

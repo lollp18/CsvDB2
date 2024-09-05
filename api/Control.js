@@ -32,9 +32,12 @@ class Controller extends Model {
 
   InitUse() {
     this.App.use((req, res, next) => {
-      res.header("Access-Control-Allow-Origin", "React app URL")
-      res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-      res.header("Access-Control-Allow-Headers", "Content-Type")
+      res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers":
+          "'Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token'",
+      })
       next()
     })
     this.App.use(cors(this.CorsOptions))
@@ -110,7 +113,7 @@ class Controller extends Model {
   async Login(req, res) {
     try {
       const { Email, Passwort } = req.body
-      console.log(req)
+      console.log(req.body)
       if (!Email || !Passwort) {
         return res.status(202).send("Alle Felder ausfüllen")
       }

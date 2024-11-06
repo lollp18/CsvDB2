@@ -15,7 +15,7 @@ class Model {
       "mongodb+srv://lorenzo123696:lollp123@cluster0.8wsnvma.mongodb.net/?retryWrites=true&w=majority"
 
     this.Router = express.Router()
- 
+
     this.SECRET = "CSVDB-REST-API"
 
     this.Schema = {
@@ -33,67 +33,47 @@ class Model {
 
     this.UserModel = mongoose.model("User", this.UserSchema)
     this.CorsOptions = {
-      origin: [
-        "http://localhost:5173",
-        "https://csv2.netlify.app",
-        "http://localhost:3000",
-      ],
+      origin: ["http://localhost:3000"],
       credentials: true,
       optionSuccessStatus: 200,
       exposedHeaders: ["set-cookie"],
     }
   }
 
-  async GetUsers() {
-    return await this.UserModel.find()
-  }
+  GetUsers = async () => await this.UserModel.find()
 
-  async GetUserByEmail(Email) {
-    return await this.UserModel.findOne({ Email })
-  }
+  GetUserByEmail = async (Email) => await this.UserModel.findOne({ Email })
 
-  async GetUserByEmailSelect(Email) {
-    const Select = "+Authentication.Salt +Authentication.Password"
+  GetUserByEmailSelect = async (Email) =>
+    await this.UserModel.findOne({ Email }).select(
+      "+Authentication.Salt +Authentication.Password"
+    )
 
-    return await this.UserModel.findOne({ Email }).select(Select)
-  }
+  GetUserById = async (id) => await this.UserModel.findById(id)
 
-  async GetUserById(id) {
-    return await this.UserModel.findById(id)
-  }
+  DeleteUserById = async (id) =>
+    await this.UserModel.findOneAndDelete({ _id: id })
 
-  async DeleteUserById(id) {
-    return await this.UserModel.findOneAndDelete({ _id: id })
-  }
+  UpdateUserById = async (id, value) =>
+    await this.UserModel.findByIdAndUpdate(id, value)
 
-  async UpdateUserById(id, value) {
-    return await this.UserModel.findByIdAndUpdate(id, value)
-  }
-
-  async GetUserBySessionToken(SessionToken) {
-    const FilterCondition = {
+  GetUserBySessionToken = async (SessionToken) =>
+    await this.UserModel.findOne({
       "Authentication.SessionToken": SessionToken,
-    }
-    return await this.UserModel.findOne(FilterCondition)
-  }
+    })
 
-  async CreateUser(value) {
-    const user = await new this.UserModel(value).save()
-    return user.toObject()
-  }
+  CreateUser = async (value) =>
+    (await new this.UserModel(value).save()).toObject()
 
   // Helpers
 
-  Random() {
-    return crypto.randomBytes(128).toString("base64")
-  }
+  Random = () => crypto.randomBytes(128).toString("base64")
 
-  Authentication(salt, password) {
-    return crypto
+  Authentication = (salt, password) =>
+    crypto
       .createHmac("sha256", [salt, password].join("/"))
       .update(this.SECRET)
       .digest("hex")
-  }
 
   // Middlewares
 
@@ -101,15 +81,11 @@ class Model {
     try {
       const SessionToken = req.cookies["CSVDB-AUTH"]
 
-      if (!SessionToken) {
-        return res.sendStatus(403)
-      }
+      if (!SessionToken) return res.sendStatus(403)
 
       const ExistingUser = await this.GetUserBySessionToken(SessionToken)
 
-      if (!ExistingUser) {
-        return res.sendStatus(403)
-      }
+      if (!ExistingUser) return res.sendStatus(403)
 
       merge(req, { Identity: ExistingUser })
 
@@ -126,13 +102,10 @@ class Model {
 
       const CurrentUserId = get(req, "Identity._id")
 
-      if (!CurrentUserId) {
-        return res.sendStatus(400)
-      }
+      if (!CurrentUserId) return res.sendStatus(400)
 
-      if (CurrentUserId.toString() !== id) {
-        return res.sendStatus(403)
-      }
+      if (CurrentUserId.toString() !== id) return res.sendStatus(403)
+
       return next()
     } catch (e) {
       console.log(e)

@@ -15,7 +15,7 @@ class Model {
       "mongodb+srv://lorenzo123696:lollp123@cluster0.8wsnvma.mongodb.net/?retryWrites=true&w=majority"
 
     this.Router = express.Router()
- 
+
     this.SECRET = "CSVDB-REST-API"
 
     this.Schema = {

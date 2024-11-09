@@ -10,19 +10,19 @@ class Controller extends Model {
   constructor() {
     super()
 
-    this.PathRegistrieren = "/auth/registrieren"
+    this.PathSignup = "/auth/Signup"
 
     this.PathLogin = "/auth/login"
 
     this.PathUsers = "/users"
     this.PathDeleteAndUpdateUsers = "/users/:id"
     this.PathUserTables = "/user/:id/tables"
-    this.PathUserTablesDelete = "/user/:id/tables/:tableID" //
+    this.PathUserTablesDelete = "/user/:id/tables/:tableID"
   }
 
   InitRouten() {
-    this.Registrieren()
-    this.Anmelden()
+    this.SetLogin()
+    this.SetSignup()
     this.SetGetAllUsers()
     this.SetDeleteUsers()
     this.SetUpdateUser()
@@ -31,21 +31,14 @@ class Controller extends Model {
   }
 
   InitUse() {
-    this.App.use((req, res, next) => {
-      res.set({
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "*",
-        "Access-Control-Allow-Headers":
-          "'Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token'",
-      })
-      next()
-    })
+   
     this.App.use(cors(this.CorsOptions))
     this.App.use(express.json())
     this.App.use(compression())
     this.App.use(cookieParser())
     this.App.use(bodyParser.json())
     this.App.use("/", this.Router)
+
   }
 
   ListenServer() {
@@ -69,35 +62,32 @@ class Controller extends Model {
     })
   }
 
-  Anmelden() {
+  SetLogin() {
     this.Router.post(this.PathLogin, this.Login.bind(this))
   }
 
-  Registrieren() {
-    this.Router.post(this.PathRegistrieren, this.Register.bind(this))
+  SetSignup() {
+    this.Router.post(this.PathSignup, this.Signup.bind(this))
   }
 
-  async Register(req, res) {
+  async Signup(req, res) {
     try {
-      const { Email, Username, Passwort } = req.body
+      const { Email, Username, Password } = req.body
       console.log(req.body)
-      if (!Email || !Passwort || !Username) {
+      if (!Email || !Password || !Username)
         return res.status(202).send("Alle Felder ausfüllen")
-      }
 
       const ExistingUser = await this.GetUserByEmail(Email)
 
-      if (ExistingUser) {
-        return res.status(202).send("User already exists")
-      }
+      if (ExistingUser) return res.status(202).send("User already exists")
 
       const Salt = this.Random()
-      const Password = this.Authentication(Salt, Passwort)
+      const HashPassword = this.Authentication(Salt, Password)
       const User = await this.CreateUser({
         Username,
         Email,
         Authentication: {
-          Password: Password,
+          Password: HashPassword,
           Salt,
         },
         CurrentTables: [],
@@ -112,26 +102,22 @@ class Controller extends Model {
 
   async Login(req, res) {
     try {
-      const { Email, Passwort } = req.body
+      const { Email, Password } = req.body
       console.log(req.body)
-      if (!Email || !Passwort) {
+      if (!Email || !Password)
         return res.status(202).send("Alle Felder ausfüllen")
-      }
 
       const User = await this.GetUserByEmailSelect(Email)
 
-      if (!User) {
-        return res.status(202).send("Diesen User gibt es nicht")
-      }
+      if (!User) return res.status(202).send("Diesen User gibt es nicht")
 
       const ExpectedHash = this.Authentication(
         User.Authentication.Salt,
-        Passwort
+        Password
       )
 
-      if (User.Authentication.Password !== ExpectedHash) {
+      if (User.Authentication.Password !== ExpectedHash)
         return res.status(202).send("Passwort Falsch")
-      }
 
       const Salt = this.Random()
       User.Authentication.SessionToken = this.Authentication(
@@ -213,9 +199,7 @@ class Controller extends Model {
       const { CurrentTables } = req.body
       console.log(CurrentTables)
       const { id } = req.params
-      if (!CurrentTables) {
-        return res.sendStatus(400)
-      }
+      if (!CurrentTables) return res.sendStatus(400)
 
       const User = await this.GetUserById(id)
       User.CurrentTables = CurrentTables
@@ -241,9 +225,8 @@ class Controller extends Model {
   async GetUserTables(req, res) {
     try {
       const { id } = req.params
-      if (!id) {
-        return res.sendStatus(400)
-      }
+      if (!id) return res.sendStatus(400)
+
       const User = await this.GetUserById(id)
 
       const UserTables = User.CurrentTables
@@ -265,12 +248,10 @@ class Controller extends Model {
   async DeletTable(req, res) {
     try {
       const { id, tableID } = req.params
-      if (!id) {
-        return res.sendStatus(400)
-      }
-      if (!tableID) {
-        return res.sendStatus(400)
-      }
+      if (!id) return res.sendStatus(400)
+
+      if (!tableID) return res.sendStatus(400)
+
       const User = await this.GetUserById(id)
       User.CurrentTables.splice(tableID, 1)
       await User.save()

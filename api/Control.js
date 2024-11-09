@@ -70,7 +70,7 @@ class Controller extends Model {
 
   async Signup(req, res) {
     try {
-      const { Email, Username, Password } = req.body
+      const { Email, Username, Passwort } = req.body
       console.log(req.body)
       if (!Email || !Password || !Username)
         return res.status(202).send("Alle Felder ausfüllen")
@@ -80,12 +80,12 @@ class Controller extends Model {
       if (ExistingUser) return res.status(202).send("User already exists")
 
       const Salt = this.Random()
-      const HashPassword = this.Authentication(Salt, Password)
+      const HashPasswort = this.Authentication(Salt, Passwort)
       const User = await this.CreateUser({
         Username,
         Email,
         Authentication: {
-          Password: HashPassword,
+          Passwort: HashPasswort,
           Salt,
         },
         CurrentTables: [],
@@ -100,7 +100,7 @@ class Controller extends Model {
 
   async Login(req, res) {
     try {
-      const { Email, Password } = req.body
+      const { Email, Passwort } = req.body
       console.log(req.body)
       if (!Email || !Password)
         return res.status(202).send("Alle Felder ausfüllen")
@@ -111,7 +111,7 @@ class Controller extends Model {
 
       const ExpectedHash = this.Authentication(
         User.Authentication.Salt,
-        Password
+        Passwort
       )
 
       if (User.Authentication.Password !== ExpectedHash)

@@ -10,7 +10,7 @@ class Controller extends Model {
   constructor() {
     super()
 
-    this.PathSignup = "/auth/Signup"
+    this.PathSignup = "/auth/registriren"
 
     this.PathLogin = "/auth/login"
 
@@ -31,14 +31,12 @@ class Controller extends Model {
   }
 
   InitUse() {
-   
     this.App.use(cors(this.CorsOptions))
     this.App.use(express.json())
     this.App.use(compression())
     this.App.use(cookieParser())
     this.App.use(bodyParser.json())
     this.App.use("/", this.Router)
-
   }
 
   ListenServer() {

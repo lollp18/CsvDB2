@@ -72,7 +72,7 @@ class Controller extends Model {
     try {
       const { Email, Username, Passwort } = req.body
       console.log(req.body)
-      if (!Email || !Password || !Username)
+      if (!Email || !Passwort || !Username)
         return res.status(202).send("Alle Felder ausfüllen")
 
       const ExistingUser = await this.GetUserByEmail(Email)
@@ -102,7 +102,7 @@ class Controller extends Model {
     try {
       const { Email, Passwort } = req.body
       console.log(req.body)
-      if (!Email || !Password)
+      if (!Email || !Passwort)
         return res.status(202).send("Alle Felder ausfüllen")
 
       const User = await this.GetUserByEmailSelect(Email)
